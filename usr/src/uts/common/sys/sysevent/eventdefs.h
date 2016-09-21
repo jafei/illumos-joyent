@@ -21,6 +21,7 @@
 /*
  * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
  * Copyright 2015 Nexenta Systems, Inc.  All rights reserved.
+ * Copyright 2016 Joyent, Inc.
  */
 
 #ifndef	_SYS_SYSEVENT_EVENTDEFS_H
@@ -265,6 +266,7 @@ extern "C" {
 #define	ESC_ZFS_VDEV_SPARE		"ESC_ZFS_vdev_spare"
 #define	ESC_ZFS_BOOTFS_VDEV_ATTACH	"ESC_ZFS_bootfs_vdev_attach"
 #define	ESC_ZFS_POOL_REGUID		"ESC_ZFS_pool_reguid"
+#define	ESC_ZFS_HISTORY_EVENT		"ESC_ZFS_history_event"
 
 /*
  * datalink subclass definitions. Supporting attributes for datalink state found

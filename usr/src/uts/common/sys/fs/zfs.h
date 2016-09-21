@@ -23,8 +23,8 @@
  * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2014 by Delphix. All rights reserved.
  * Copyright 2011 Nexenta Systems, Inc.  All rights reserved.
- * Copyright (c) 2013, Joyent, Inc. All rights reserved.
  * Copyright (c) 2014 Integros [integros.com]
+ * Copyright 2016 Joyent, Inc.
  */
 
 /* Portions Copyright 2010 Robert Milkowski */
@@ -956,11 +956,18 @@ typedef enum {
  *		ZFS_EV_POOL_GUID	DATA_TYPE_UINT64
  *		ZFS_EV_VDEV_PATH	DATA_TYPE_STRING	(optional)
  *		ZFS_EV_VDEV_GUID	DATA_TYPE_UINT64
+ *
+ *	ESC_ZFS_HISTORY_EVENT
+ *
+ *		ZFS_EV_POOL_NAME	DATA_TYPE_STRING
+ *		ZFS_EV_POOL_GUID	DATA_TYPE_UINT64
+ *		ZFS_EV_HISTORY		DATA_TYPE_NVLIST
  */
 #define	ZFS_EV_POOL_NAME	"pool_name"
 #define	ZFS_EV_POOL_GUID	"pool_guid"
 #define	ZFS_EV_VDEV_PATH	"vdev_path"
 #define	ZFS_EV_VDEV_GUID	"vdev_guid"
+#define	ZFS_EV_HISTORY		"history_record"
 
 #ifdef	__cplusplus
 }

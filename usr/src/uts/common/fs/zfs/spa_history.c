@@ -23,6 +23,7 @@
  * Copyright (c) 2006, 2010, Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2015 by Delphix. All rights reserved.
  * Copyright (c) 2014 Integros [integros.com]
+ * Copyright 2016 Joyent, Inc.
  */
 
 #include <sys/spa.h>
@@ -39,6 +40,8 @@
 #include <sys/cred.h>
 #include "zfs_comutil.h"
 #ifdef _KERNEL
+#include <sys/sysevent.h>
+#include <sys/sysevent/eventdefs.h>
 #include <sys/zone.h>
 #endif
 
@@ -192,6 +195,50 @@ spa_history_zone(void)
 }
 
 /*
+ * Post a history sysevent.  The nvlist_t* passed into this function will be
+ * duplicated (by nvlist_add_nvlist) and should be freed by caller.
+ * This function will only run in the context of the kernel.
+ */
+static void
+spa_history_log_notify(spa_t *spa, nvlist_t *nvl)
+{
+#ifdef _KERNEL
+	sysevent_t		*ev;
+	sysevent_attr_list_t	*attr = NULL;
+	sysevent_value_t	value;
+	sysevent_id_t		eid;
+
+	ev = sysevent_alloc(EC_ZFS, ESC_ZFS_HISTORY_EVENT,
+	    SUNW_KERN_PUB "zfs", SE_SLEEP);
+
+	value.value_type = SE_DATA_TYPE_STRING;
+	value.value.sv_string = spa_name(spa);
+	if (sysevent_add_attr(&attr, ZFS_EV_POOL_NAME, &value, SE_SLEEP) != 0)
+		goto done;
+
+	value.value_type = SE_DATA_TYPE_UINT64;
+	value.value.sv_uint64 = spa_guid(spa);
+	if (sysevent_add_attr(&attr, ZFS_EV_POOL_GUID, &value, SE_SLEEP) != 0)
+		goto done;
+
+	value.value_type = SE_DATA_TYPE_NVLIST;
+	value.value.sv_nvlist = nvl;
+	if (sysevent_add_attr(&attr, ZFS_EV_HISTORY, &value, SE_SLEEP) != 0)
+		goto done;
+
+	if (sysevent_attach_attributes(ev, attr) != 0)
+		goto done;
+	attr = NULL;
+
+	(void) log_sysevent(ev, SE_SLEEP, &eid);
+
+done:
+	sysevent_free_attr(attr);
+	sysevent_free(ev);
+#endif
+}
+
+/*
  * Write out a history event.
  */
 /*ARGSUSED*/
@@ -255,6 +302,7 @@ spa_history_log_sync(void *arg, dmu_tx_t *tx)
 			    fnvlist_lookup_string(nvl, ZPOOL_HIST_INT_NAME),
 			    fnvlist_lookup_string(nvl, ZPOOL_HIST_INT_STR));
 		}
+		spa_history_log_notify(spa, nvl);
 	} else if (nvlist_exists(nvl, ZPOOL_HIST_IOCTL)) {
 		zfs_dbgmsg("ioctl %s",
 		    fnvlist_lookup_string(nvl, ZPOOL_HIST_IOCTL));

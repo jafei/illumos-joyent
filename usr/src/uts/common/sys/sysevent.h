@@ -21,7 +21,7 @@
 
 /*
  * Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2015 Joyent, Inc.
+ * Copyright 2016 Joyent, Inc.
  */
 
 #ifndef	_SYS_SYSEVENT_H
@@ -64,6 +64,7 @@ extern "C" {
 #define	SE_DATA_TYPE_STRING	DATA_TYPE_STRING
 #define	SE_DATA_TYPE_BYTES	DATA_TYPE_BYTE_ARRAY
 #define	SE_DATA_TYPE_TIME	DATA_TYPE_HRTIME
+#define	SE_DATA_TYPE_NVLIST	DATA_TYPE_NVLIST
 
 #define	SE_KERN_PID	0
 
@@ -130,6 +131,7 @@ typedef struct sysevent_value {
 		hrtime_t	sv_time;
 		char		*sv_string;
 		sysevent_bytes_t	sv_bytes;
+		nvlist_t	*sv_nvlist;
 	} value;
 } sysevent_value_t;
 

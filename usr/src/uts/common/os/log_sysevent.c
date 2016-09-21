@@ -22,6 +22,7 @@
  * Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
  * Copyright 2013 Nexenta Systems, Inc.  All rights reserved.
  * Copyright 2016 Toomas Soome <tsoome@me.com>
+ * Copyright 2016 Joyent, Inc.
  */
 
 #include <sys/types.h>
@@ -640,6 +641,10 @@ sysevent_add_attr(sysevent_attr_list_t **ev_attr_list, char *name,
 	case SE_DATA_TYPE_TIME:
 		error = nvlist_add_hrtime(*ev_attr_list, name,
 		    se_value->value.sv_time);
+		break;
+	case SE_DATA_TYPE_NVLIST:
+		error = nvlist_add_nvlist(*ev_attr_list, name,
+		    se_value->value.sv_nvlist);
 		break;
 	default:
 		return (SE_EINVAL);
